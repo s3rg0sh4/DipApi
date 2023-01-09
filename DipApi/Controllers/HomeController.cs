@@ -7,8 +7,8 @@ namespace DipApi.Controllers
 	[ApiController]
 	[Route("[controller]")]
 	[Authorize(Roles = "User")]
-	public class HomeController : ControllerBase
+	public class UserController : ControllerBase
 	{
-
+		//TODO: учимся передавать штуки из 1с во фронт
 	}
 }
