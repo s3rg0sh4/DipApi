@@ -2,9 +2,10 @@
 {
 	public class Candidate
 	{
-		Guid GuidCandidate	{ get; set; }//Guid кандидата
-		string? JobTitle	{ get; set; }//Должность
-		string? Subdivision { get; set; }//Подразделение
-		string? TypeRate	{ get; set; }//Тип ставки
+		public int Id { get; set; }
+		public Guid GuidCandidate	{ get; set; }   //Guid кандидата
+		public string? JobTitle		{ get; set; }   //Должность
+		public string? Subdivision	{ get; set; }	//Подразделение
+		public string? TypeRate		{ get; set; }	//Тип ставки
 	}
 }

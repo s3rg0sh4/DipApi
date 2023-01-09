@@ -1,15 +1,18 @@
-﻿namespace DipApi.Entities
+﻿using DipApi.Enums;
+
+namespace DipApi.Entities
 {
 	public class HiringApplication
 	{
-		bool? IsError;                           //Если данные не прошли проверку
-		string? ErrorString;                     //Сообщение об ошибке
-		Guid? GuidHiringApplication = null;     //Guid заявления о приеме
-		Guid? GuidPrintingForm = null;          //Guid печатной формы
-		DateTime? DateOfApply;                   //Дата приема
-		bool? Physical;                          //true если трудовая физическая, false - электронная
-		int? IdDirectum = null;                 //Id задачи согласования документа в директуме
-		HiringApplicationSigningStatus? Status = HiringApplicationSigningStatus.Undefined; //Статус согласования
-		int? signingId;                         //Id подписания
+		public int Id { get; set; }
+		public bool? IsError				{ get; set; }	//Если данные не прошли проверку
+		public string? ErrorString			{ get; set; }	//Сообщение об ошибке
+		public DateTime? DateOfApply		{ get; set; }	//Дата приема
+		public bool? Physical				{ get; set; }	//true если трудовая физическая, false - электронная
+		public int? SigningId				{ get; set; }	//Id подписания
+		public Guid? GuidHiringApplication	{ get; set; } = null;	//Guid заявления о приеме
+		public Guid? GuidPrintingForm		{ get; set; } = null;	//Guid печатной формы
+		public int? IdDirectum				{ get; set; } = null;	//Id задачи согласования документа в директуме
+		public HiringApplicationSigningStatus? Status { get; set; } = HiringApplicationSigningStatus.Undefined;	//Статус согласования
 	}
 }

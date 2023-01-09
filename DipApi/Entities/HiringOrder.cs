@@ -1,14 +1,17 @@
-﻿namespace DipApi.Entities
+﻿using DipApi.Enums;
+
+namespace DipApi.Entities
 {
 	public class HiringOrder
 	{
-		bool? IsError;                           //Если ошибка
-		string? ErrorString;                     //Сообщении об ошибке
-		Guid? GuidHiringOrder = null;        //Guid приказа
-		Guid? GuidPrintingForm = null;          //Guid печатной формы
-		int? IdDirectim = null;                 //Id задачи согласования приказа в директуме
-		string? OrderNumber = null;              //Номер приказа
-		string? DateOrder = null;                //Дата приказа
-		HiringOrderStatus? OrderStatus = HiringOrderStatus.Undefined; //Статус приказа
+		public int Id { get; set; }
+		public bool? IsError					{ get; set; }	//Есть ли ошибка
+		public string? ErrorString				{ get; set; }	//Сообщении об ошибке
+		public Guid? GuidHiringOrder			{ get; set; } = null;	//Guid приказа
+		public Guid? GuidPrintingForm			{ get; set; } = null;	//Guid печатной формы
+		public int? IdDirectim					{ get; set; } = null;	//Id задачи согласования приказа в директуме
+		public string? OrderNumber				{ get; set; } = null;	//Номер приказа
+		public string? DateOrder				{ get; set; } = null;	//Дата приказа
+		public HiringOrderStatus? OrderStatus	{ get; set; } = HiringOrderStatus.Undefined;	//Статус приказа
 	}
 }

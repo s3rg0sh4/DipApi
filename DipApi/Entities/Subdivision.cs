@@ -2,8 +2,9 @@
 {
 	public class Subdivision
 	{
-		Guid GuidSubdivision		{ get; set; }//Guid подразделения
-		Guid GuidSubdivisionManager { get; set; }//Guid сотрудника - руководителя подразделения
-		string? SubdivisionName		{ get; set; }//Наименование подразделения
+		public int Id { get; set; }
+		public Guid GuidSubdivision			{ get; set; }   //Guid подразделения
+		public Guid GuidSubdivisionManager	{ get; set; }   //Guid сотрудника - руководителя подразделения
+		public string? SubdivisionName		{ get; set; }	//Наименование подразделения
 	}
 }

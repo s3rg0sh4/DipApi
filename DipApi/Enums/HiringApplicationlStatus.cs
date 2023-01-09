@@ -1,6 +1,9 @@
 ﻿namespace DipApi.Enums
 {
-	public class HiringApplicationlStatus
+	public enum HiringApplicationlStatus
 	{
+		Undefined = 0,
+		Approved = 1,
+		NotAgreed = 2
 	}
 }
