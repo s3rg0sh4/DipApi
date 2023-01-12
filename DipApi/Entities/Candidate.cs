@@ -3,9 +3,9 @@
 	public class Candidate
 	{
 		public int Id { get; set; }
-		public Guid GuidCandidate	{ get; set; }   //Guid кандидата
 		public string? JobTitle		{ get; set; }   //Должность
 		public string? Subdivision	{ get; set; }	//Подразделение
-		public string? TypeRate		{ get; set; }	//Тип ставки
+		public string? RateType		{ get; set; }	//Тип ставки
+		public Guid? GuidCandidate	{ get; set; }   //Guid кандидата
 	}
 }

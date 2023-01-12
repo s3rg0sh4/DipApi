@@ -7,8 +7,13 @@ namespace DipApi.Controllers
 	[ApiController]
 	[Route("[controller]")]
 	[Authorize(Roles = "User")]
-	public class UserController : ControllerBase
+	public class CandidateController : ControllerBase
 	{
 		//TODO: учимся передавать штуки из 1с во фронт
+		public CandidateController()
+		{
+		}
+
+
 	}
 }

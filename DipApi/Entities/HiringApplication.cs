@@ -10,9 +10,9 @@ namespace DipApi.Entities
 		public DateTime? DateOfApply		{ get; set; }	//Дата приема
 		public bool? Physical				{ get; set; }	//true если трудовая физическая, false - электронная
 		public int? SigningId				{ get; set; }	//Id подписания
-		public Guid? GuidHiringApplication	{ get; set; } = null;	//Guid заявления о приеме
+		public HiringApplicationSigningStatus? Status { get; set; } = HiringApplicationSigningStatus.Undefined;	//Статус согласования
 		public Guid? GuidPrintingForm		{ get; set; } = null;	//Guid печатной формы
 		public int? IdDirectum				{ get; set; } = null;	//Id задачи согласования документа в директуме
-		public HiringApplicationSigningStatus? Status { get; set; } = HiringApplicationSigningStatus.Undefined;	//Статус согласования
+		public Guid? GuidHiringApplication	{ get; set; } = null;	//Guid заявления о приеме
 	}
 }

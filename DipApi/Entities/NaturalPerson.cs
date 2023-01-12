@@ -2,7 +2,7 @@
 {
 	public class NaturalPerson
 	{
-		public int Id						{ get; set; }
+		public int Id { get; set; }
 		public Guid GuidHiringOrder			{ get; set; }	//Заявление о приеме на работу
 		public Guid GuidNaturalPerson		{ get; set; }	//Guid физлица
 		public string? Name					{ get; set; }	//Имя
