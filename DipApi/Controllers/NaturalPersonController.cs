@@ -1,39 +1,46 @@
-﻿using DipApi.Models;
+﻿namespace DipApi.Controllers;
+
+using DipApi.Models;
 using DipApi.Services;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-using WebApi.Entities;
+using DipApi.Entities;
 
-namespace DipApi.Controllers
+[Authorize]
+[ApiController]
+[Route("api/[action]")]
+public class NaturalPersonController : ControllerBase
 {
-    [Authorize]
-	[Route("api/[controller]/[action]")]
-	[ApiController]
-	public class NaturalPersonController : ControllerBase
+	private readonly INaturalPersonService _naturalPersonService;
+	private readonly UserManager<User> _userManager;
+	
+
+	private NaturalPerson person = new NaturalPerson();
+
+	public NaturalPersonController(INaturalPersonService naturalPersonService, UserManager<User> userManager) 
+	{ 
+		_naturalPersonService = naturalPersonService;
+		_userManager = userManager;
+	}
+
+	[HttpPost(Name = "create")]
+	public async Task<IActionResult> Create()
 	{
-		private readonly INaturalPersonService _naturalPersonService;
-		private readonly UserManager<User> _userManager;
-
-		private NaturalPerson person = new NaturalPerson();
-
-		public NaturalPersonController(INaturalPersonService naturalPersonService, UserManager<User> userManager) 
-		{ 
-			_naturalPersonService = naturalPersonService;
-			_userManager = userManager;
-		}
-
-		[HttpPost]
-		public async Task<IActionResult> CreateNaturalPerson(string email)
+		if (Request.Cookies.TryGetValue("email", out var email))
 		{
 			Guid guid = _naturalPersonService.CreateNaturalPerson(person);
 			var user = await _userManager.FindByEmailAsync(email);
 			user.NaturalPersonGuid = guid;
 
-			return Ok(); //мб чёт вернём
+			var result = await _userManager.UpdateAsync(user);
+			if (result.Succeeded)
+			{
+				return Ok(); //мб чёт вернём
+			}
 		}
-
+		return BadRequest();
 	}
 }

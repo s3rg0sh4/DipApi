@@ -1,4 +1,4 @@
-namespace WebApi.Helpers;
+namespace DipApi.Helpers;
 
 public class AppSettings
 {

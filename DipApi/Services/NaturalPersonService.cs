@@ -10,7 +10,7 @@ namespace DipApi.Services
 	{
 		public Guid CreateNaturalPerson(NaturalPerson naturalPerson)
 		{
-			return new Guid();
+			return Guid.NewGuid();
 		}
 	}
 }

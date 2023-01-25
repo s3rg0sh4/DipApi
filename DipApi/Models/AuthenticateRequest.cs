@@ -1,4 +1,4 @@
-namespace WebApi.Models;
+namespace DipApi.Models;
 
 using System.ComponentModel.DataAnnotations;
 

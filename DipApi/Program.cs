@@ -1,15 +1,16 @@
 using System.Data;
+using System.Text;
 
 using DipApi.DB;
 using DipApi.Services;
+using DipApi.Entities;
+using DipApi.Helpers;
+
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
-using WebApi.Entities;
-using WebApi.Helpers;
-using WebApi.Services;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +29,7 @@ var builder = WebApplication.CreateBuilder(args);
 	services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<UserContext>();
 
 	// configure strongly typed settings object
-	services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+	//services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
 	// configure DI for application services
 	services.AddScoped<ICandidateService, CandidateService>();
@@ -37,19 +38,24 @@ var builder = WebApplication.CreateBuilder(args);
 	services.AddScoped<INaturalPersonService, NaturalPersonService>();
 	services.AddScoped<ITokenService, TokenService>();
 
-	services.AddAuthentication(options =>
-	{
-		options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-		options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-		options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-	})
-		.AddJwtBearer();
+	services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+		.AddJwtBearer(options =>
+		{
+			options.TokenValidationParameters = new TokenValidationParameters
+			{
+				ValidateIssuerSigningKey = true,
+				IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
+					.GetBytes(builder.Configuration.GetSection("AppSettings:Secret").Value)),
+				ValidateIssuer = false,
+				ValidateAudience = false
+			};
+		});
 	services.AddAuthorization();
 }
 
 var app = builder.Build();
 
-//// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
 //	app.UseSwagger();
@@ -64,7 +70,7 @@ app.UseCors(x => x
 		.AllowAnyHeader());
 
 // custom jwt auth middleware
-app.UseMiddleware<JwtMiddleware>();
+///app.UseMiddleware<JwtMiddleware>();
 
 app.UseAuthorization();
 app.UseAuthentication();
@@ -72,3 +78,4 @@ app.UseAuthentication();
 app.MapControllers();
 
 app.Run("http://localhost:4000");
+//app.Run();
