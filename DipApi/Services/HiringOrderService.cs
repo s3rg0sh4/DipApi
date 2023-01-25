@@ -1,4 +1,4 @@
-﻿using DipApi.Entities;
+﻿using DipApi.Models;
 using DipApi.Enums;
 
 namespace DipApi.Services
