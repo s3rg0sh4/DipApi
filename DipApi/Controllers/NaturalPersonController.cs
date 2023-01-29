@@ -2,15 +2,13 @@
 
 using DipApi.Models;
 using DipApi.Services;
+using DipApi.Entities;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-using DipApi.Entities;
-
-[ApiController]
 [Route("api/[action]")]
+[ApiController]
 public class NaturalPersonController : ControllerBase
 {
 	private readonly INaturalPersonService _naturalPersonService;
@@ -22,7 +20,7 @@ public class NaturalPersonController : ControllerBase
 		_userManager = userManager;
 	}
 
-	[HttpPost(Name = "create")]
+	[HttpPost]
 	public async Task<IActionResult> Create(NaturalPerson naturalPerson)
 	{
 		if (Request.Cookies.TryGetValue("email", out var email))

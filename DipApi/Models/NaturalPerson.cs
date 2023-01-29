@@ -18,21 +18,21 @@
         public string Email { get; set; }  //Адрес электронной почты
         public string[]? AdditionalData { get; set; }   //Дополнительные сведения для личного листка учета кадров (тут неуверен, куда это пихать)
 
-        public NaturalPerson()
-        {
-            Name = string.Empty;
-            MiddleName = string.Empty;
-            Surname = string.Empty;
-            PassportSeries = string.Empty;
-            PassportNumber = string.Empty;
-            RegistrationAddress = string.Empty;
-            Citizenship = string.Empty;
-            RealAddress = string.Empty;
-            PhoneNumber = string.Empty;
-            Email = string.Empty;
-            SnilsNumber = string.Empty;
-            InnNumber = string.Empty;
-        }
+        //public NaturalPerson()
+        //{
+        //    Name = string.Empty;
+        //    MiddleName = string.Empty;
+        //    Surname = string.Empty;
+        //    PassportSeries = string.Empty;
+        //    PassportNumber = string.Empty;
+        //    RegistrationAddress = string.Empty;
+        //    Citizenship = string.Empty;
+        //    RealAddress = string.Empty;
+        //    PhoneNumber = string.Empty;
+        //    Email = string.Empty;
+        //    SnilsNumber = string.Empty;
+        //    InnNumber = string.Empty;
+        //}
     }
 
 }

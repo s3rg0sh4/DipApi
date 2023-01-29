@@ -1,4 +1,4 @@
-namespace DipApi.Services;
+namespace DipApi.Services.Impl;
 
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -7,11 +7,8 @@ using System.Security.Claims;
 using System.Text;
 using DipApi.Entities;
 using DipApi.Helpers;
-
-public interface ITokenService
-{
-    string GenerateJwtToken(User user);
-}
+using DipApi.Models;
+using System.Security.Cryptography;
 
 public class TokenService : ITokenService
 {
@@ -36,4 +33,36 @@ public class TokenService : ITokenService
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
+
+	public RefreshToken GenerateRefreshToken()
+	{
+		var refreshToken = new RefreshToken
+		{
+			Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+			Expires = DateTime.Now.AddDays(int.Parse(_appSettings.RefreshTokenValidityInDays)).ToUniversalTime()
+		};
+
+		return refreshToken;
+	}
+
+	public string CreateToken(User user)
+	{
+		var claims = new List<Claim>
+		{
+			new Claim(ClaimTypes.Email, user.Email)
+		};
+
+		var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.Secret));
+
+		var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+		var token = new JwtSecurityToken(
+			claims: claims,
+			expires: DateTime.Now.AddMinutes(int.Parse(_appSettings.TokenValidityInMinutes)),
+			signingCredentials: creds);
+
+		var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+		return jwt;
+	}
 }
