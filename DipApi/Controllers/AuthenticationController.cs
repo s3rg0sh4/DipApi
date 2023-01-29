@@ -6,39 +6,35 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using DipApi.Entities;
-
-using DipApi.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using DipApi.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 
+[AllowAnonymous]
 [ApiController]
 [Route("[controller]/[action]")]
-public class AuthenticationController : ControllerBase
+public class AuthenticationController : ControllerBase //безопасность страдает
 {
     //private readonly ITokenService _tokenService;
 	private readonly UserManager<User> _userManager;
 	private readonly SignInManager<User> _signInManager;
-	//private readonly AppSettings _appSettings;
 	private readonly IConfiguration _config;
 
-    public AuthenticationController(/*ITokenService tokenService,*/
-        UserManager<User> userManager, SignInManager<User> signInManager, /*AppSettings appSettings,*/ IConfiguration configuration)
+	public AuthenticationController(/*ITokenService tokenService,*/ UserManager<User> userManager, 
+		SignInManager<User> signInManager, IConfiguration configuration)
     {
         //_tokenService = tokenService;
         _userManager = userManager;
         _signInManager = signInManager;
-		//_appSettings = appSettings;
 		_config = configuration;
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Login(AuthenticateRequest model)
+	[HttpPost]
+	public async Task<IActionResult> Login(AuthenticateRequest model)
 	{
 		var user = await _userManager.FindByEmailAsync(model.Email);
         var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);

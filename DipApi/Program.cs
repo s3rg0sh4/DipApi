@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +40,19 @@ var builder = WebApplication.CreateBuilder(args);
 	services.AddScoped<INaturalPersonService, NaturalPersonService>();
 	services.AddScoped<ITokenService, TokenService>();
 
-	services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+	services.AddControllers(options =>
+	{
+		var policy = new AuthorizationPolicyBuilder("Bearer").RequireAuthenticatedUser().Build();
+		options.Filters.Add(new AuthorizeFilter(policy));
+	});
+
+
+	services.AddAuthentication(
+		options => {
+		options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+		options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+		options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+	})
 		.AddJwtBearer(options =>
 		{
 			options.TokenValidationParameters = new TokenValidationParameters

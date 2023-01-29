@@ -9,16 +9,12 @@ using Microsoft.AspNetCore.Mvc;
 
 using DipApi.Entities;
 
-[Authorize]
 [ApiController]
 [Route("api/[action]")]
 public class NaturalPersonController : ControllerBase
 {
 	private readonly INaturalPersonService _naturalPersonService;
 	private readonly UserManager<User> _userManager;
-	
-
-	private NaturalPerson person = new NaturalPerson();
 
 	public NaturalPersonController(INaturalPersonService naturalPersonService, UserManager<User> userManager) 
 	{ 
@@ -27,11 +23,11 @@ public class NaturalPersonController : ControllerBase
 	}
 
 	[HttpPost(Name = "create")]
-	public async Task<IActionResult> Create()
+	public async Task<IActionResult> Create(NaturalPerson naturalPerson)
 	{
 		if (Request.Cookies.TryGetValue("email", out var email))
 		{
-			Guid guid = _naturalPersonService.CreateNaturalPerson(person);
+			Guid guid = _naturalPersonService.CreateNaturalPerson(naturalPerson);
 			var user = await _userManager.FindByEmailAsync(email);
 			user.NaturalPersonGuid = guid;
 
