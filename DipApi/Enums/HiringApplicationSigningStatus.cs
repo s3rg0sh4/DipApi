@@ -1,9 +1,8 @@
-﻿namespace DipApi.Enums
+﻿namespace DipApi.Enums;
+
+public enum HiringApplicationSigningStatus
 {
-	public enum HiringApplicationSigningStatus
-	{
-		Undefined = 0,
-		Signing = 1,
-		Unsigned = 2,
-	}
+	Undefined = 0,
+	Signing = 1,
+	Unsigned = 2,
 }

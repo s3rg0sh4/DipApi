@@ -1,17 +1,16 @@
-﻿using DipApi.Enums;
+﻿namespace DipApi.Services.Impl;
+
+using DipApi.Enums;
 using DipApi.Models;
 
-namespace DipApi.Services.Impl
+public class StatusService : IStatusService
 {
-	public class StatusService : IStatusService
+	public HiringOrderStatus GetOrderStatus(Guid orderGuid)
 	{
-		public HiringOrderStatus GetOrderStatus(Guid orderGuid)
-		{
-			//get hiring order by guid
-			var order = new HiringOrder();
+		//get hiring order by guid
+		var order = new HiringOrder();
 
 
-			return order.OrderStatus;
-		}
+		return order.OrderStatus;
 	}
 }

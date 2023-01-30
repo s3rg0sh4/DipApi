@@ -1,9 +1,8 @@
-﻿using DipApi.Enums;
+﻿namespace DipApi.Services;
 
-namespace DipApi.Services
+using DipApi.Enums;
+
+public interface IStatusService
 {
-    public interface IStatusService
-    {
-        HiringOrderStatus GetOrderStatus(Guid orderGuid);
-    }
+    HiringOrderStatus GetOrderStatus(Guid orderGuid);
 }

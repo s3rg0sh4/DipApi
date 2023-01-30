@@ -1,9 +1,8 @@
-﻿using DipApi.Models;
+﻿namespace DipApi.Services;
 
-namespace DipApi.Services
+using DipApi.Models;
+
+public interface INaturalPersonService
 {
-	public interface INaturalPersonService
-	{
-		Guid CreateNaturalPerson(NaturalPerson naturalPerson);
-	}
+	Guid CreateNaturalPerson(NaturalPerson naturalPerson);
 }

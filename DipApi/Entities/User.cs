@@ -1,10 +1,6 @@
 namespace DipApi.Entities;
 
-using System.ComponentModel.DataAnnotations;
-
 using Microsoft.AspNetCore.Identity;
-
-using NpgsqlTypes;
 
 public class User : IdentityUser
 {

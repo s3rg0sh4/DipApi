@@ -1,8 +1,7 @@
-﻿namespace DipApi.Models
+﻿namespace DipApi.Models;
+
+public class RefreshToken
 {
-    public class RefreshToken
-    {
-        public string Token { get; set; } = string.Empty;
-        public DateTime Expires { get; set; }
-    }
+    public string Token { get; set; } = string.Empty;
+    public DateTime Expires { get; set; }
 }
