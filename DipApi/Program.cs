@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using DipApi.Services.Impl;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,12 +32,12 @@ var builder = WebApplication.CreateBuilder(args);
 	services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<UserContext>();
 
 	// configure strongly typed settings object
-	//services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+	services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
 	// configure DI for application services
-	services.AddScoped<ICandidateService, CandidateService>();
-	services.AddScoped<IHiringApplicationService, HiringApplicationService>();
-	services.AddScoped<IHiringOrderService, HiringOrderService>();
+	//services.AddScoped<ICandidateService, CandidateService>();
+	//services.AddScoped<IHiringApplicationService, HiringApplicationService>();
+	//services.AddScoped<IHiringOrderService, HiringOrderService>();
 	services.AddScoped<INaturalPersonService, NaturalPersonService>();
 	services.AddScoped<ITokenService, TokenService>();
 

@@ -4,7 +4,7 @@ namespace DipApi.Models
 {
     public class HiringApplication
     {
-        public int Id { get; set; }
+
         public bool? IsError { get; set; }  //Если данные не прошли проверку
         public string? ErrorString { get; set; }    //Сообщение об ошибке
         public DateTime? DateOfApply { get; set; }  //Дата приема
