@@ -14,61 +14,61 @@ using Microsoft.AspNetCore.Http;
 [Route("[controller]/[action]")]
 public class AuthenticationController : ControllerBase //безопасность страдает
 {
-    private readonly ITokenService _tokenService;
+	private readonly ITokenService _tokenService;
 	private readonly UserManager<User> _userManager;
 	private readonly SignInManager<User> _signInManager;
 
-	public AuthenticationController(ITokenService tokenService, UserManager<User> userManager, 
+	public AuthenticationController(ITokenService tokenService, UserManager<User> userManager,
 		SignInManager<User> signInManager)
-    {
-        _tokenService = tokenService;
-        _userManager = userManager;
-        _signInManager = signInManager;
-    }
+	{
+		_tokenService = tokenService;
+		_userManager = userManager;
+		_signInManager = signInManager;
+	}
 
 	[HttpPost]
 	public async Task<IActionResult> Login(AuthenticateRequest model)
 	{
 		var user = await _userManager.FindByEmailAsync(model.Email);
-        var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
+		var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
 
-        if (result.Succeeded)
-        {
-            var token = _tokenService.CreateToken(user);
+		if (result.Succeeded)
+		{
+			var token = _tokenService.CreateToken(user);
 			var newRefreshToken = _tokenService.GenerateRefreshToken();
 
-			var setresult = await SetRefreshToken(newRefreshToken, user);
-			Response.Cookies.Append("email", user.Email);
+			var setresult = await _tokenService.SetRefreshToken(newRefreshToken, user);
 
 			if (!setresult.Succeeded)
-				return BadRequest(new { message = "Update failed" });
+				return BadRequest(new { message = "Update failed." });
 
-            return Ok(new AuthenticateResponse(user, token));
+
+			return Ok(new AuthenticateResponse(user.Email, token, newRefreshToken));
 		}
 
-        return BadRequest(new { message = "Username or password is incorrect" });
-    }
+		return BadRequest("Username or password is incorrect.");
+	}
 
-    [HttpPost]
-    public async Task<IActionResult> Logout()
-    {
-        await _signInManager.SignOutAsync();
-		Response.Cookies.Delete("refreshToken");
-		Response.Cookies.Delete("email");
-
-		return Ok("Logout");
-    }
-
-	[HttpPost("refresh-token")]
-	public async Task<ActionResult<string>> RefreshToken(string email)
+	[HttpPost]
+	public async Task<IActionResult> Logout()
 	{
-		var user = await _userManager.FindByEmailAsync(email);
+		await _signInManager.SignOutAsync();
 
-		var refreshToken = Request.Cookies["refreshToken"];
+		return Ok();
+	}
 
-		if (!user.Token.Equals(refreshToken))
+	[HttpPost]
+	public async Task<IActionResult> UpdateToken(AuthenticateResponse model) 
+	{ 
+		var user = await _userManager.FindByEmailAsync(model.Email);
+
+		if (user.Token == null)
 		{
-			return Unauthorized("Invalid Refresh Token.");
+			return Unauthorized("No such refresh token.");
+		}
+		if (!user.Token.Equals(model.RefreshToken.Token))
+		{
+			return Unauthorized("Invalid refresh token.");
 		}
 		if (user.TokenExpires < DateTime.Now)
 		{
@@ -78,26 +78,11 @@ public class AuthenticationController : ControllerBase //безопасност�
 		string token = _tokenService.CreateToken(user);
 		var newRefreshToken = _tokenService.GenerateRefreshToken();
 
-		var setresult = await SetRefreshToken(newRefreshToken, user);
+		var setresult = await _tokenService.SetRefreshToken(newRefreshToken, user);
 
 		if (!setresult.Succeeded)
 			return BadRequest(new { message = "Update failed" });
 
-		return Ok(token);
-	}
-
-	private async Task<IdentityResult> SetRefreshToken(RefreshToken newRefreshToken, User user)
-	{
-		var cookieOptions = new CookieOptions
-		{
-			HttpOnly = true,
-			Expires = newRefreshToken.Expires
-		};
-		Response.Cookies.Append("refreshToken", newRefreshToken.Token, cookieOptions);
-
-		user.Token = newRefreshToken.Token;
-		user.TokenExpires = newRefreshToken.Expires;
-		
-		return await _userManager.UpdateAsync(user);
+		return Ok(new AuthenticateResponse(user.Email, token, newRefreshToken));
 	}
 }

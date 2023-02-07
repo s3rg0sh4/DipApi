@@ -9,30 +9,34 @@ using DipApi.Entities;
 using DipApi.Helpers;
 using DipApi.Models;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Identity;
 
 public class TokenService : ITokenService
 {
     private readonly AppSettings _appSettings;
+	private readonly UserManager<User> _userManager;
 
-    public TokenService(IOptions<AppSettings> appSettings)
+    public TokenService(IOptions<AppSettings> appSettings, UserManager<User> userManager)
     {
         _appSettings = appSettings.Value;
-    }
+		_userManager = userManager;
 
-    public string GenerateJwtToken(User user)
-    {
-        // generate token that is valid for 7 days
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id) }),
-            Expires = DateTime.UtcNow.AddDays(7),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-        };
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
-    }
+	}
+
+    //public string GenerateJwtToken(User user)
+    //{
+    //    // generate token that is valid for 7 days
+    //    var tokenHandler = new JwtSecurityTokenHandler();
+    //    var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+    //    var tokenDescriptor = new SecurityTokenDescriptor
+    //    {
+    //        Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id) }),
+    //        Expires = DateTime.UtcNow.AddDays(7),
+    //        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+    //    };
+    //    var token = tokenHandler.CreateToken(tokenDescriptor);
+    //    return tokenHandler.WriteToken(token);
+    //}
 
 	public RefreshToken GenerateRefreshToken()
 	{
@@ -64,5 +68,13 @@ public class TokenService : ITokenService
 		var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
 		return jwt;
+	}
+
+	public async Task<IdentityResult> SetRefreshToken(RefreshToken newRefreshToken, User user)
+	{
+		user.Token = newRefreshToken.Token;
+		user.TokenExpires = newRefreshToken.Expires;
+
+		return await _userManager.UpdateAsync(user);
 	}
 }

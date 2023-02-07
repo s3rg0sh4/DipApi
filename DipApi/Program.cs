@@ -62,7 +62,8 @@ var builder = WebApplication.CreateBuilder(args);
 				IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
 					.GetBytes(builder.Configuration.GetSection("AppSettings:Secret").Value)),
 				ValidateIssuer = false,
-				ValidateAudience = false
+				ValidateAudience = false,
+				ClockSkew = TimeSpan.Zero
 			};
 		});
 	services.AddAuthorization();

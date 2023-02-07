@@ -6,6 +6,7 @@ using DipApi.Entities;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 [Route("api/[action]")]
 [ApiController]
@@ -20,21 +21,33 @@ public class NaturalPersonController : ControllerBase
 		_userManager = userManager;
 	}
 
-	[HttpPost]
-	public async Task<IActionResult> Create(NaturalPerson naturalPerson)
-	{
-		if (Request.Cookies.TryGetValue("email", out var email))
-		{
-			Guid guid = _naturalPersonService.CreateNaturalPerson(naturalPerson);
-			var user = await _userManager.FindByEmailAsync(email);
-			user.NaturalPersonGuid = guid;
 
-			var result = await _userManager.UpdateAsync(user);
-			if (result.Succeeded)
+	[HttpPost]
+	//[AllowAnonymous]
+	public async Task<IActionResult> Create(CreateModel model)
+	{
+		User user;
+		try
+		{
+			user = await _userManager.FindByEmailAsync(model.Email);
+			if (user is null)
 			{
-				return Ok(); //мб чёт вернём
+				throw new Exception();
 			}
 		}
-		return BadRequest();
+		catch (Exception)
+		{
+			return BadRequest("User with such email doesn`t exist");
+		}
+		Guid guid = _naturalPersonService.CreateNaturalPerson(new NaturalPerson(model));
+		user.NaturalPersonGuid = guid;
+
+		var result = await _userManager.UpdateAsync(user);
+		if (result.Succeeded)
+		{
+			return Ok("Natural person created"); //мб чёт вернём
+		}
+		return BadRequest("Couldn`t create");
+
 	}
 }
