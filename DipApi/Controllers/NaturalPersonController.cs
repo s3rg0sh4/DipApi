@@ -45,7 +45,7 @@ public class NaturalPersonController : ControllerBase
 		var result = await _userManager.UpdateAsync(user);
 		if (result.Succeeded)
 		{
-			return Ok("Natural person created"); //мб чёт вернём
+			return Ok(); //мб чёт вернём
 		}
 		return BadRequest("Couldn`t create");
 

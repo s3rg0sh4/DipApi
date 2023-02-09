@@ -38,15 +38,9 @@ public class TokenService : ITokenService
     //    return tokenHandler.WriteToken(token);
     //}
 
-	public RefreshToken GenerateRefreshToken()
+	public string GenerateRefreshToken()
 	{
-		var refreshToken = new RefreshToken
-		{
-			Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-			Expires = DateTime.Now.AddDays(int.Parse(_appSettings.RefreshTokenValidityInDays)).ToUniversalTime()
-		};
-
-		return refreshToken;
+		return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 	}
 
 	public string CreateToken(User user)
@@ -70,10 +64,9 @@ public class TokenService : ITokenService
 		return jwt;
 	}
 
-	public async Task<IdentityResult> SetRefreshToken(RefreshToken newRefreshToken, User user)
+	public async Task<IdentityResult> SetRefreshToken(string newRefreshToken, User user)
 	{
-		user.Token = newRefreshToken.Token;
-		user.TokenExpires = newRefreshToken.Expires;
+		user.Token = newRefreshToken;
 
 		return await _userManager.UpdateAsync(user);
 	}

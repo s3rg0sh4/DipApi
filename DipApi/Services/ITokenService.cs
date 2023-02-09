@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 public interface ITokenService
 {
     //string GenerateJwtToken(User user);
-	RefreshToken GenerateRefreshToken();
+	string GenerateRefreshToken();
 	string CreateToken(User user);
-	Task<IdentityResult> SetRefreshToken(RefreshToken newRefreshToken, User user);
+	Task<IdentityResult> SetRefreshToken(string newRefreshToken, User user);
 }

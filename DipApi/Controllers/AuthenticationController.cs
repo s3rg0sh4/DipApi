@@ -29,8 +29,19 @@ public class AuthenticationController : ControllerBase //безопасност�
 	[HttpPost]
 	public async Task<IActionResult> Login(AuthenticateRequest model)
 	{
-		var user = await _userManager.FindByEmailAsync(model.Email);
-		var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
+		User user;
+		Microsoft.AspNetCore.Identity.SignInResult result;
+		try
+		{
+			user = await _userManager.FindByEmailAsync(model.Email);
+			result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
+		}
+		catch (Exception) 
+		{
+			return BadRequest("User doesn`t exist");
+		}
+
+
 
 		if (result.Succeeded)
 		{
@@ -46,7 +57,7 @@ public class AuthenticationController : ControllerBase //безопасност�
 			return Ok(new AuthenticateResponse(user.Email, token, newRefreshToken));
 		}
 
-		return BadRequest("Username or password is incorrect.");
+		return BadRequest("Password is incorrect.");
 	}
 
 	[HttpPost]
@@ -66,13 +77,9 @@ public class AuthenticationController : ControllerBase //безопасност�
 		{
 			return Unauthorized("No such refresh token.");
 		}
-		if (!user.Token.Equals(model.RefreshToken.Token))
+		if (!user.Token.Equals(model.RefreshToken))
 		{
 			return Unauthorized("Invalid refresh token.");
-		}
-		if (user.TokenExpires < DateTime.Now)
-		{
-			return Unauthorized("Token expired.");
 		}
 
 		string token = _tokenService.CreateToken(user);
