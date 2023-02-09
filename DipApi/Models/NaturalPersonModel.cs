@@ -1,6 +1,6 @@
 ﻿namespace DipApi.Models
 {
-	public class CreateModel
+	public class NaturalPersonModel
 	{
 		public string Email { get; set; } 
 		public string Surname { get; set; }    //Фамилия
