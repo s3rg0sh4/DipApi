@@ -18,7 +18,7 @@ public class NaturalPerson
     public string Email { get; set; }  //Адрес электронной почты
     public string[]? AdditionalData { get; set; }   //Дополнительные сведения для личного листка учета кадров (тут неуверен, куда это пихать)
 
-    public NaturalPerson(CreateModel model)
+    public NaturalPerson(NaturalPersonModel model)
     {
         FirstName = model.FirstName;
         MiddleName = model.MiddleName;

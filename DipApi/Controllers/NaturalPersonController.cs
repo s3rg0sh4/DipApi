@@ -24,7 +24,7 @@ public class NaturalPersonController : ControllerBase
 
 	[HttpPost]
 	//[AllowAnonymous]
-	public async Task<IActionResult> Create(CreateModel model)
+	public async Task<IActionResult> Create(NaturalPersonModel model) //чутка переделать
 	{
 		User user;
 		try

@@ -26,6 +26,21 @@ public class AuthenticationController : ControllerBase //безопасност�
 		_signInManager = signInManager;
 	}
 
+	//TODO: сделать 2 ручки
+	//одна принимает почту и генерит кусок ссылки
+	//вторая ставит пароль по этой ссылке
+
+	[HttpPost]
+	public async Task<IActionResult> Register(RegisterDirectum model)
+	{
+		var user = new User();
+		await _userManager.CreateAsync(user);
+
+
+		return Ok();
+	}
+	
+
 	[HttpPost]
 	public async Task<IActionResult> Login(AuthenticateRequest model)
 	{
