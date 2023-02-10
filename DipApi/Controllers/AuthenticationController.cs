@@ -64,28 +64,25 @@ public class AuthController : ControllerBase
 	[HttpPost]
 	public async Task<IActionResult> Login(AuthenticateRequest model)
 	{
-		User user;
-		Microsoft.AspNetCore.Identity.SignInResult result;
 		try
 		{
-			user = await _userManager.FindByEmailAsync(model.Email);
-			result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
+			var user = await _userManager.FindByEmailAsync(model.Email);
+			var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
+
+			if (!result.Succeeded)
+				return BadRequest("Password is incorrect.");
+			
+			var token = _tokenService.CreateToken(user);
+			var newRefreshToken = _tokenService.GenerateRefreshToken();
+			await _tokenService.SetRefreshToken(newRefreshToken, user);
+			return Ok(new AuthenticateResponse(user.Email, token, newRefreshToken));
 		}
 		catch (Exception) 
 		{
 			return BadRequest("User doesn`t exist");
 		}
 
-		if (result.Succeeded)
-		{
-			var token = _tokenService.CreateToken(user);
-			var newRefreshToken = _tokenService.GenerateRefreshToken();
-			await _tokenService.SetRefreshToken(newRefreshToken, user);
 			
-			return Ok(new AuthenticateResponse(user.Email, token, newRefreshToken));
-		}
-
-		return BadRequest("Password is incorrect.");
 	}
 
 	[HttpPost]
