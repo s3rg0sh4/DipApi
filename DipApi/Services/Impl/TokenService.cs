@@ -67,6 +67,7 @@ public class TokenService : ITokenService
 	public async Task<IdentityResult> SetRefreshToken(string newRefreshToken, User user)
 	{
 		user.Token = newRefreshToken;
+		user.TokenExpires = DateTime.Now.AddDays(int.Parse(_appSettings.RefreshTokenValidityInDays)).ToUniversalTime();
 
 		return await _userManager.UpdateAsync(user);
 	}

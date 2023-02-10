@@ -7,18 +7,17 @@ using DipApi.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 
 [AllowAnonymous]
 [ApiController]
 [Route("[controller]/[action]")]
-public class AuthenticationController : ControllerBase //безопасность страдает
+public class AuthController : ControllerBase
 {
 	private readonly ITokenService _tokenService;
 	private readonly UserManager<User> _userManager;
 	private readonly SignInManager<User> _signInManager;
 
-	public AuthenticationController(ITokenService tokenService, UserManager<User> userManager,
+	public AuthController(ITokenService tokenService, UserManager<User> userManager,
 		SignInManager<User> signInManager)
 	{
 		_tokenService = tokenService;
@@ -33,9 +32,32 @@ public class AuthenticationController : ControllerBase //безопасност�
 	[HttpPost]
 	public async Task<IActionResult> Register(RegisterDirectum model)
 	{
-		var user = new User();
+		var user = new User(model.Email);
+
+		var tryFind = await _userManager.FindByEmailAsync(user.Email);
+		if (tryFind != null)
+			return BadRequest("User already exist");
+
 		await _userManager.CreateAsync(user);
 
+		return Ok($"{Request.Scheme}://{Request.Host}/auth/setPassword/{user.Id}");
+	}
+
+	[HttpPost("{guid}")]
+	public async Task<IActionResult> SetPassword([FromRoute]string guid, [FromBody]SetPassword model)
+	{
+		//Чек почту
+		//установить пароль
+		User user = await _userManager.FindByIdAsync(guid);//await _userManager.FindByEmailAsync(model.Email);
+
+		if (user == null)
+			return BadRequest("User doesn`t exist");
+
+		if (user.Email != model.Email)
+			return BadRequest("Email doesn`t match");
+
+		await _userManager.AddPasswordAsync(user, model.Password);
+		
 
 		return Ok();
 	}
@@ -56,19 +78,12 @@ public class AuthenticationController : ControllerBase //безопасност�
 			return BadRequest("User doesn`t exist");
 		}
 
-
-
 		if (result.Succeeded)
 		{
 			var token = _tokenService.CreateToken(user);
 			var newRefreshToken = _tokenService.GenerateRefreshToken();
-
-			var setresult = await _tokenService.SetRefreshToken(newRefreshToken, user);
-
-			if (!setresult.Succeeded)
-				return BadRequest(new { message = "Update failed." });
-
-
+			await _tokenService.SetRefreshToken(newRefreshToken, user);
+			
 			return Ok(new AuthenticateResponse(user.Email, token, newRefreshToken));
 		}
 
@@ -96,14 +111,18 @@ public class AuthenticationController : ControllerBase //безопасност�
 		{
 			return Unauthorized("Invalid refresh token.");
 		}
+		if (user.TokenExpires < DateTime.Now)
+		{
+			return Unauthorized("Token expired.");
+		}
 
-		string token = _tokenService.CreateToken(user);
+		var token = _tokenService.CreateToken(user);
 		var newRefreshToken = _tokenService.GenerateRefreshToken();
 
 		var setresult = await _tokenService.SetRefreshToken(newRefreshToken, user);
 
 		if (!setresult.Succeeded)
-			return BadRequest(new { message = "Update failed" });
+			return BadRequest("Update failed");
 
 		return Ok(new AuthenticateResponse(user.Email, token, newRefreshToken));
 	}

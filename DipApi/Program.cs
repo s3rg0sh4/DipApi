@@ -40,6 +40,8 @@ var builder = WebApplication.CreateBuilder(args);
 	//services.AddScoped<IHiringOrderService, HiringOrderService>();
 	services.AddScoped<INaturalPersonService, NaturalPersonService>();
 	services.AddScoped<ITokenService, TokenService>();
+	services.AddScoped<IEmailService, EmailService>();
+	services.AddScoped<IStatusService, StatusService>();
 
 	services.AddControllers(options =>
 	{
@@ -85,8 +87,6 @@ app.UseCors(x => x
 		.AllowAnyMethod()
 		.AllowAnyHeader());
 
-// custom jwt auth middleware
-///app.UseMiddleware<JwtMiddleware>();
 
 app.UseAuthorization();
 app.UseAuthentication();
