@@ -7,6 +7,7 @@ using DipApi.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Controllers;
 
 [AllowAnonymous]
 [ApiController]
@@ -31,37 +32,37 @@ public class AuthController : ControllerBase
 
 	[HttpPost]
 	public async Task<IActionResult> Register(RegisterDirectum model)
-	{
+	{		
 		var user = new User(model.Email);
 
 		var tryFind = await _userManager.FindByEmailAsync(user.Email);
 		if (tryFind != null)
 			return BadRequest("User already exist");
 
-		await _userManager.CreateAsync(user);
 
-		return Ok($"{Request.Scheme}://{Request.Host}/auth/setPassword/{user.Id}");
+		//Вместо результата должно отправляться сообщение на почту, делается легко, но нужно сделать по-человечески
+		return Ok(RouteData.Values["controller"]);
+		//return Ok(Url.Action(nameof (SetPassword), RouteData.Values, new { guid = user.Id }, Request.Scheme));
 	}
 
 	[HttpPost("{guid}")]
 	public async Task<IActionResult> SetPassword([FromRoute]string guid, [FromBody]SetPassword model)
 	{
-		//Чек почту
-		//установить пароль
-		User user = await _userManager.FindByIdAsync(guid);//await _userManager.FindByEmailAsync(model.Email);
+		User user = await _userManager.FindByIdAsync(guid);
 
 		if (user == null)
-			return BadRequest("User doesn`t exist");
-
+			return BadRequest("User doesn`t exist.");
+			
 		if (user.Email != model.Email)
-			return BadRequest("Email doesn`t match");
+			return BadRequest("Email doesn`t match.");
+
+		if (user.PasswordHash is not null)
+			return BadRequest("User password is already set.");
 
 		await _userManager.AddPasswordAsync(user, model.Password);
-		
 
 		return Ok();
 	}
-	
 
 	[HttpPost]
 	public async Task<IActionResult> Login(AuthenticateRequest model)
