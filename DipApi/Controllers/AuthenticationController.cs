@@ -26,23 +26,20 @@ public class AuthController : ControllerBase
 		_signInManager = signInManager;
 	}
 
-	//TODO: сделать 2 ручки
-	//одна принимает почту и генерит кусок ссылки
-	//вторая ставит пароль по этой ссылке
-
 	[HttpPost]
 	public async Task<IActionResult> Register(RegisterDirectum model)
-	{		
+	{
 		var user = new User(model.Email);
 
-		var tryFind = await _userManager.FindByEmailAsync(user.Email);
+		var tryFind = await _userManager.FindByEmailAsync(model.Email);
 		if (tryFind != null)
 			return BadRequest("User already exist");
 
+		await _userManager.CreateAsync(user);
 
 		//Вместо результата должно отправляться сообщение на почту, делается легко, но нужно сделать по-человечески
-		return Ok(RouteData.Values["controller"]);
-		//return Ok(Url.Action(nameof (SetPassword), RouteData.Values, new { guid = user.Id }, Request.Scheme));
+		return Ok(Url.Action(nameof (SetPassword).ToLower(), ControllerContext.ActionDescriptor.ControllerName.ToLower(), 
+			new { guid = user.Id }, Request.Scheme));
 	}
 
 	[HttpPost("{guid}")]
