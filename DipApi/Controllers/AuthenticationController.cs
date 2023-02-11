@@ -64,25 +64,26 @@ public class AuthController : ControllerBase
 	[HttpPost]
 	public async Task<IActionResult> Login(AuthenticateRequest model)
 	{
+		User user;
 		try
 		{
-			var user = await _userManager.FindByEmailAsync(model.Email);
-			var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
-
-			if (!result.Succeeded)
-				return BadRequest("Password is incorrect.");
-			
-			var token = _tokenService.CreateToken(user);
-			var newRefreshToken = _tokenService.GenerateRefreshToken();
-			await _tokenService.SetRefreshToken(newRefreshToken, user);
-			return Ok(new AuthenticateResponse(user.Email, token, newRefreshToken));
+			user = await _userManager.FindByEmailAsync(model.Email);
 		}
 		catch (Exception) 
 		{
 			return BadRequest("User doesn`t exist");
 		}
 
+		var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
+
+		if (!result.Succeeded)
+			return BadRequest("Password is incorrect.");
 			
+		var token = _tokenService.CreateToken(user);
+		var newRefreshToken = _tokenService.GenerateRefreshToken();
+		await _tokenService.SetRefreshToken(newRefreshToken, user);
+
+		return Ok(new AuthenticateResponse(user.Email, token, newRefreshToken));
 	}
 
 	[HttpPost]
@@ -95,29 +96,22 @@ public class AuthController : ControllerBase
 
 	[HttpPost]
 	public async Task<IActionResult> UpdateToken(AuthenticateResponse model) 
-	{ 
+	{
 		var user = await _userManager.FindByEmailAsync(model.Email);
 
-		if (user.Token == null)
-		{
+		if (user.Token is null)
 			return Unauthorized("No such refresh token.");
-		}
+
 		if (!user.Token.Equals(model.RefreshToken))
-		{
 			return Unauthorized("Invalid refresh token.");
-		}
+
 		if (user.TokenExpires < DateTime.Now)
-		{
 			return Unauthorized("Token expired.");
-		}
 
 		var token = _tokenService.CreateToken(user);
 		var newRefreshToken = _tokenService.GenerateRefreshToken();
 
-		var setresult = await _tokenService.SetRefreshToken(newRefreshToken, user);
-
-		if (!setresult.Succeeded)
-			return BadRequest("Update failed");
+		await _tokenService.SetRefreshToken(newRefreshToken, user);
 
 		return Ok(new AuthenticateResponse(user.Email, token, newRefreshToken));
 	}

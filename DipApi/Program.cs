@@ -35,9 +35,6 @@ var builder = WebApplication.CreateBuilder(args);
 	services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
 	// configure DI for application services
-	//services.AddScoped<ICandidateService, CandidateService>();
-	//services.AddScoped<IHiringApplicationService, HiringApplicationService>();
-	//services.AddScoped<IHiringOrderService, HiringOrderService>();
 	services.AddScoped<INaturalPersonService, NaturalPersonService>();
 	services.AddScoped<ITokenService, TokenService>();
 	services.AddScoped<IEmailService, EmailService>();
