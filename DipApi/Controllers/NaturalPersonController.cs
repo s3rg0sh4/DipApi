@@ -6,7 +6,6 @@ using DipApi.Entities;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 
 [Route("api/[action]")]
 [ApiController]
@@ -24,7 +23,7 @@ public class NaturalPersonController : ControllerBase
 
 	[HttpPost]
 	//[AllowAnonymous]
-	public async Task<IActionResult> Create(NaturalPersonModel model) //чутка переделать
+	public async Task<IActionResult> Create(CreateRequest model) //чутка переделать
 	{
 		User user;
 		try
@@ -39,7 +38,7 @@ public class NaturalPersonController : ControllerBase
 		{
 			return BadRequest("User with such email doesn`t exist");
 		}
-		Guid guid = _naturalPersonService.CreateNaturalPerson(new NaturalPerson(model));
+		Guid guid = _naturalPersonService.CreateNaturalPerson(new NaturalPerson(model.CreateModel));
 		user.NaturalPersonGuid = guid;
 
 		var result = await _userManager.UpdateAsync(user);

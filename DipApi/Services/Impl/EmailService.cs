@@ -6,18 +6,21 @@ namespace DipApi.Services.Impl
 {
 	public class EmailService : IEmailService
 	{
-		private static async Task SendEmailAsync()
+		public async void SendEmailAsync(string email, string body)
 		{
-			MailAddress from = new MailAddress("somemail@gmail.com", "Tom");
-			MailAddress to = new MailAddress("somemail@yandex.ru");
-			MailMessage m = new MailMessage(from, to);
-			m.Subject = "Тест";
-			m.Body = "Письмо-тест 2 работы smtp-клиента";
-			SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
-			smtp.Credentials = new NetworkCredential("somemail@gmail.com", "mypassword");
-			smtp.EnableSsl = true;
+			var from = new MailAddress("testingemailsender@mail.ru");
+			var to = new MailAddress("s3rg0sh4@gmail.com"); //email
+			var m = new MailMessage(from, to)
+			{
+				Subject = "Тест",
+				Body = body
+			};
+			var smtp = new SmtpClient("smtp.mail.ru", 587)
+			{
+				Credentials = new NetworkCredential("testingemailsender@mail.ru", "TKLTv5272v2cZsZxJgwE"),
+				EnableSsl = true
+			};
 			await smtp.SendMailAsync(m);
-			Console.WriteLine("Письмо отправлено");
 		}
 	}
 }

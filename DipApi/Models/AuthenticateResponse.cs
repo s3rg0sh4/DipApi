@@ -1,7 +1,5 @@
 namespace DipApi.Models;
 
-using DipApi.Entities;
-
 public class AuthenticateResponse
 {
     public string Email { get; set; }

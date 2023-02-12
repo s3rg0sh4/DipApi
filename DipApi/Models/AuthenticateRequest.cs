@@ -1,7 +1,5 @@
 namespace DipApi.Models;
 
-using System.ComponentModel.DataAnnotations;
-
 public class AuthenticateRequest
 {
     public string Email { get; set; }

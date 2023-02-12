@@ -7,7 +7,6 @@ using DipApi.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Controllers;
 
 [AllowAnonymous]
 [ApiController]
@@ -15,13 +14,15 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 public class AuthController : ControllerBase
 {
 	private readonly ITokenService _tokenService;
+	private readonly IEmailService _emailService;
 	private readonly UserManager<User> _userManager;
 	private readonly SignInManager<User> _signInManager;
 
-	public AuthController(ITokenService tokenService, UserManager<User> userManager,
+	public AuthController(ITokenService tokenService, IEmailService emailService, UserManager<User> userManager,
 		SignInManager<User> signInManager)
 	{
 		_tokenService = tokenService;
+		_emailService = emailService;
 		_userManager = userManager;
 		_signInManager = signInManager;
 	}
@@ -32,20 +33,31 @@ public class AuthController : ControllerBase
 		var user = new User(model.Email);
 
 		var tryFind = await _userManager.FindByEmailAsync(model.Email);
+
 		if (tryFind != null)
 			return BadRequest("User already exist");
 
 		await _userManager.CreateAsync(user);
 
-		//Вместо результата должно отправляться сообщение на почту, делается легко, но нужно сделать по-человечески
-		return Ok(Url.Action(nameof (SetPassword).ToLower(), ControllerContext.ActionDescriptor.ControllerName.ToLower(), 
-			new { guid = user.Id }, Request.Scheme));
+		//Вместо результата должно отправляться сообщение на почту, делается легко, но нужно сделать по - человечески
+
+		try
+		{
+			string emailBody = $"Ссылка для регистрации\nhttp://localhost:3000/register/{user.Id}";
+			_emailService.SendEmailAsync(user.Email, emailBody);
+		}
+		catch (Exception) 
+		{
+			BadRequest("Email not sent");
+		}
+
+		return Ok("Email sent" );
 	}
 
-	[HttpPost("{guid}")]
-	public async Task<IActionResult> SetPassword([FromRoute]string guid, [FromBody]SetPassword model)
+	[HttpPost]
+	public async Task<IActionResult> SetPassword(SetPassword model)
 	{
-		User user = await _userManager.FindByIdAsync(guid);
+		User user = await _userManager.FindByIdAsync(model.Guid);
 
 		if (user == null)
 			return BadRequest("User doesn`t exist.");
@@ -90,12 +102,13 @@ public class AuthController : ControllerBase
 	public async Task<IActionResult> Logout()
 	{
 		await _signInManager.SignOutAsync();
+		
 
 		return Ok();
 	}
 
 	[HttpPost]
-	public async Task<IActionResult> UpdateToken(AuthenticateResponse model) 
+	public async Task<IActionResult> UpdateToken(TokenUpdateRequest model) 
 	{
 		var user = await _userManager.FindByEmailAsync(model.Email);
 
@@ -113,6 +126,6 @@ public class AuthController : ControllerBase
 
 		await _tokenService.SetRefreshToken(newRefreshToken, user);
 
-		return Ok(new AuthenticateResponse(user.Email, token, newRefreshToken));
+		return Ok(new TokenUpdateResponse(token, newRefreshToken));
 	}
 }
