@@ -23,7 +23,6 @@ var builder = WebApplication.CreateBuilder(args);
 {
 	var services = builder.Services;
 	var connectionStringUsers = builder.Configuration.GetConnectionString("DefaultConnection");
-
 	services.AddCors();
 	services.AddControllers();
 	services.AddDbContext<UserContext>(options => options.UseNpgsql(connectionStringUsers));
@@ -89,5 +88,5 @@ app.UseAuthentication();
 app.MapControllers();
 
 
-app.Run("http://localhost:4000");
-//app.Run();
+//app.Run("http://localhost:4000");
+app.Run();

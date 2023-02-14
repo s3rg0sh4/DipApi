@@ -1,0 +1,10 @@
+version: '3.4'
+
+services:
+  dipapi:
+    image: ${DOCKER_REGISTRY-}dipapi
+    build:
+      context: .
+      dockerfile: DipApi/Dockerfile
+  #db:
+  #  image: postgres
