@@ -1,4 +1,4 @@
-﻿namespace DipApi.Services.Impl;
+﻿namespace DipApi.Services.Implementation;
 
 using DipApi.Models;
 

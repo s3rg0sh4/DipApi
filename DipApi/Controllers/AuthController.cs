@@ -14,44 +14,15 @@ using Microsoft.AspNetCore.Authorization;
 public class AuthController : ControllerBase
 {
 	private readonly ITokenService _tokenService;
-	private readonly IEmailService _emailService;
 	private readonly UserManager<User> _userManager;
 	private readonly SignInManager<User> _signInManager;
 
-	public AuthController(ITokenService tokenService, IEmailService emailService, UserManager<User> userManager,
+	public AuthController(ITokenService tokenService, UserManager<User> userManager,
 		SignInManager<User> signInManager)
 	{
 		_tokenService = tokenService;
-		_emailService = emailService;
 		_userManager = userManager;
 		_signInManager = signInManager;
-	}
-
-	[HttpPost]
-	public async Task<IActionResult> Register(RegisterDirectum model)
-	{
-		var user = new User(model.Email);
-
-		var tryFind = await _userManager.FindByEmailAsync(model.Email);
-
-		if (tryFind != null)
-			return BadRequest("User already exist");
-
-		await _userManager.CreateAsync(user);
-
-		//Вместо результата должно отправляться сообщение на почту, делается легко, но нужно сделать по - человечески
-
-		try
-		{
-			string emailBody = $"Ссылка для регистрации\nhttp://localhost:3000/register/{user.Id}";
-			_emailService.SendEmailAsync(user.Email, emailBody);
-		}
-		catch (Exception) 
-		{
-			BadRequest("Email not sent");
-		}
-
-		return Ok("Email sent" );
 	}
 
 	[HttpPost]

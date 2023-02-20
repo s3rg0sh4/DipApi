@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using DipApi.Services.Impl;
+using DipApi.Services.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +36,7 @@ var builder = WebApplication.CreateBuilder(args);
 	services.AddScoped<ITokenService, TokenService>();
 	services.AddScoped<IEmailService, EmailService>();
 	services.AddScoped<IStatusService, StatusService>();
+	services.AddScoped<IRateService, RateService>();
 
 	services.AddControllers(options =>
 	{

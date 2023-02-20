@@ -2,7 +2,7 @@
 using System.Net.Mail;
 
 
-namespace DipApi.Services.Impl
+namespace DipApi.Services.Implementation
 {
 	public class EmailService : IEmailService
 	{
