@@ -2,7 +2,8 @@
 {
 	public class CreateRequest
 	{
-		public string Email { get; set; }
-		public NaturalPersonModel CreateModel { get; set; }
+		public string UserEmail { get; set; }
+		public string NaturalPerson { get; set; }
+		public List<IFormFile> Files { get; set; }
 	}
 }

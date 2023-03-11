@@ -28,7 +28,7 @@ public class AuthController : ControllerBase
 	[HttpPost]
 	public async Task<IActionResult> SetPassword(SetPassword model)
 	{
-		User user = await _userManager.FindByIdAsync(model.Guid);
+		var user = await _userManager.FindByIdAsync(model.Guid);
 
 		if (user == null)
 			return BadRequest("User doesn`t exist.");
@@ -47,14 +47,10 @@ public class AuthController : ControllerBase
 	[HttpPost]
 	public async Task<IActionResult> Login(AuthenticateRequest model)
 	{
-		User user;
-		try
+		User user = await _userManager.FindByEmailAsync(model.Email);
+		if (user == null)
 		{
-			user = await _userManager.FindByEmailAsync(model.Email);
-		}
-		catch (Exception) 
-		{
-			return BadRequest("User doesn`t exist");
+			return BadRequest($"User with email {model.Email} doesn`t exist");
 		}
 
 		var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
@@ -82,6 +78,10 @@ public class AuthController : ControllerBase
 	public async Task<IActionResult> UpdateToken(TokenUpdateRequest model) 
 	{
 		var user = await _userManager.FindByEmailAsync(model.Email);
+		if (user == null)
+		{
+			return BadRequest($"User with email {model.Email} doesn`t exist");
+		}
 
 		if (user.Token is null)
 			return Unauthorized("No such refresh token.");

@@ -25,7 +25,7 @@ var builder = WebApplication.CreateBuilder(args);
 	var connectionStringUsers = builder.Configuration.GetConnectionString("DefaultConnection");
 	services.AddCors();
 	services.AddControllers();
-	services.AddDbContext<UserContext>(options => options.UseNpgsql(connectionStringUsers));
+	services.AddDbContext<UserContext>(options => options.UseLazyLoadingProxies().UseNpgsql(connectionStringUsers));
 	services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<UserContext>();
 
 	// configure strongly typed settings object
@@ -37,6 +37,7 @@ var builder = WebApplication.CreateBuilder(args);
 	services.AddScoped<IEmailService, EmailService>();
 	services.AddScoped<IStatusService, StatusService>();
 	services.AddScoped<IRateService, RateService>();
+	services.AddScoped<IFileService, FileService>();
 
 	services.AddControllers(options =>
 	{

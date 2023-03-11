@@ -1,4 +1,6 @@
-﻿using DipApi.Entities;
+﻿using System.Net.Http.Headers;
+
+using DipApi.Entities;
 using DipApi.Models;
 using DipApi.Services;
 using DipApi.Services.Implementation;
@@ -18,12 +20,14 @@ namespace DipApi.Controllers
 		private readonly IEmailService _emailService;
 		private readonly IRateService _rateService;
 		private readonly UserManager<User> _userManager;
+		private readonly IFileService _fileService;
 
-		public DirectumController(IEmailService emailService, UserManager<User> userManager, IRateService rateService)
+		public DirectumController(IEmailService emailService, UserManager<User> userManager, IRateService rateService, IFileService fileService)
 		{
 			_emailService = emailService;
 			_userManager = userManager;
 			_rateService = rateService;
+			_fileService = fileService;
 		}
 		//отдать директуму список ставок
 
@@ -35,7 +39,19 @@ namespace DipApi.Controllers
 			return Ok(rates);
 		}
 
+		[HttpGet]
+		public async Task<IActionResult> GetUserFiles(string email)
+		{
+			var user = await _userManager.FindByEmailAsync(email);
+			if (user == null)
+			{
+				return BadRequest($"User with email {email} doesn`t exist");
+			}
 
+			var files = await _fileService.GetUserFiles(user);
+
+			return Ok(files);
+		}
 
 		[HttpPost]
 		public async Task<IActionResult> SignOn(RegisterDirectum model)
