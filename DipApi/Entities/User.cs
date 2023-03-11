@@ -11,7 +11,7 @@ public class User : IdentityUser
 	public Guid NaturalPersonGuid { get; set; }
 	public string Token { get; set; } = string.Empty;
 	public DateTime? TokenExpires { get; set; }
-	//τΰιλϋ
+	//Γ΄Γ Γ©Γ«Γ»
 	[ForeignKey("UserId")]
 	public virtual ICollection<FileDetails> FileDetails { get; set; }
 

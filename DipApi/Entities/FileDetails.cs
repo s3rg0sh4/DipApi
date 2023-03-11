@@ -1,7 +1,5 @@
-﻿using Microsoft.VisualBasic.FileIO;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using DipApi.Enums;
 using System.Text.Json.Serialization;
 
 #nullable disable
