@@ -1,4 +1,4 @@
-namespace DipApi.Services.Impl;
+namespace DipApi.Services.Implementation;
 
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

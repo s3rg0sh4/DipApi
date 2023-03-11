@@ -6,6 +6,11 @@ using DipApi.Entities;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using DipApi.DB;
+using System.Text.Json.Nodes;
+using Microsoft.AspNetCore.Authorization;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 [Route("api/[action]")]
 [ApiController]
@@ -13,32 +18,37 @@ public class NaturalPersonController : ControllerBase
 {
 	private readonly INaturalPersonService _naturalPersonService;
 	private readonly UserManager<User> _userManager;
+	private readonly IFileService _fileService;
 
-	public NaturalPersonController(INaturalPersonService naturalPersonService, UserManager<User> userManager) 
-	{ 
+	public NaturalPersonController(INaturalPersonService naturalPersonService, UserManager<User> userManager, IFileService fileService)
+	{
 		_naturalPersonService = naturalPersonService;
 		_userManager = userManager;
+		_fileService = fileService;
 	}
 
-
 	[HttpPost]
-	//[AllowAnonymous]
-	public async Task<IActionResult> Create(CreateRequest model) //чутка переделать
+	[AllowAnonymous]
+	[RequestSizeLimit(10_000_000)]
+	public async Task<IActionResult> Create([FromForm]CreateRequest model)
 	{
-		User user;
+		var user = await _userManager.FindByEmailAsync(model.UserEmail);
+		if (user == null)
+		{
+			return BadRequest($"User with email {model.UserEmail} doesn`t exist");
+		}
 		try
 		{
-			user = await _userManager.FindByEmailAsync(model.Email);
-			if (user is null)
-			{
-				throw new Exception();
-			}
+			_fileService.SaveFiles(model.Files, user.Id);
 		}
-		catch (Exception)
+		catch(Exception ex)
 		{
-			return BadRequest("User with such email doesn`t exist");
+			return BadRequest(ex.Message);
 		}
-		Guid guid = _naturalPersonService.CreateNaturalPerson(new NaturalPerson(model.CreateModel));
+
+		NaturalPersonModel person = JsonConvert.DeserializeObject<NaturalPersonModel>(model.NaturalPerson);
+
+		Guid guid = _naturalPersonService.CreateNaturalPerson(new NaturalPerson(person));
 		user.NaturalPersonGuid = guid;
 
 		var result = await _userManager.UpdateAsync(user);
@@ -47,6 +57,5 @@ public class NaturalPersonController : ControllerBase
 			return Ok(); //мб чёт вернём
 		}
 		return BadRequest("Couldn`t create");
-
 	}
 }
